@@ -11,10 +11,10 @@
     "windows": [
       {
         "title": "LocalDrop – LAN File Transfer",
-        "width": 1100,
-        "height": 720,
-        "minWidth": 800,
-        "minHeight": 560,
+        "width": 1000,
+        "height": 620,
+        "minWidth": 700,
+        "minHeight": 460,
         "resizable": true,
         "center": true
       }

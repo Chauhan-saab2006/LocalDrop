@@ -2066,6 +2066,33 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "92daf443525c4cce67b150400bc2316076100ce0b3686209eb8cf3c31612e6f0"
 
 [[package]]
+name = "localdrop"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "base64 0.22.1",
+ "bytes",
+ "dirs 5.0.1",
+ "futures-util",
+ "http-body-util",
+ "image",
+ "mime_guess",
+ "qrcode",
+ "rfd",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-opener",
+ "tokio",
+ "tokio-stream",
+ "tokio-util",
+ "tower-http",
+ "urlencoding",
+ "uuid",
+]
+
+[[package]]
 name = "lock_api"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3680,33 +3707,6 @@ dependencies = [
  "webview2-com",
  "window-vibrancy",
  "windows",
-]
-
-[[package]]
-name = "tauri-app"
-version = "0.1.0"
-dependencies = [
- "axum",
- "base64 0.22.1",
- "bytes",
- "dirs 5.0.1",
- "futures-util",
- "http-body-util",
- "image",
- "mime_guess",
- "qrcode",
- "rfd",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-opener",
- "tokio",
- "tokio-stream",
- "tokio-util",
- "tower-http",
- "urlencoding",
- "uuid",
 ]
 
 [[package]]

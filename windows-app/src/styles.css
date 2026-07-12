@@ -4,20 +4,20 @@
 
 /* ── Design Tokens ── */
 :root {
-  --bg:           #0c0c13;
-  --surface:      #14141e;
-  --surface2:     #1c1c2a;
-  --surface3:     #232336;
-  --accent:       #7c6af7;
-  --accent2:      #a855f7;
-  --accent-glow:  rgba(124, 106, 247, 0.22);
-  --success:      #22c55e;
-  --danger:       #ef4444;
-  --text:         #e8e8f4;
-  --text-sub:     #9898ae;
-  --text-muted:   #56566a;
-  --border:       rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(255, 255, 255, 0.12);
+  --bg:           #121212;
+  --surface:      #1e1e1e;
+  --surface2:     #252525;
+  --surface3:     #333333;
+  --accent:       #9ca3af;
+  --accent2:      #6b7280;
+  --accent-glow:  rgba(156, 163, 175, 0.22);
+  --success:      #4ade80;
+  --danger:       #f87171;
+  --text:         #e5e5e5;
+  --text-sub:     #a0a0a0;
+  --text-muted:   #6b6b6b;
+  --border:       #333333;
+  --border-hover: #6b7280;
   --radius:       16px;
   --radius-sm:    10px;
   --shadow:       0 4px 32px rgba(0, 0, 0, 0.45);
@@ -445,9 +445,9 @@ body {
   padding: 12px 14px;
   animation: slide-in 0.25s ease;
 }
-.transfer-item.active    { border-color: rgba(124,106,247,0.3); }
-.transfer-item.completed { border-color: rgba(34,197,94,0.3); }
-.transfer-item.error     { border-color: rgba(239,68,68,0.3); }
+.transfer-item.active    { border-color: rgba(156,163,175,0.3); }
+.transfer-item.completed { border-color: rgba(74,222,128,0.3); }
+.transfer-item.error     { border-color: rgba(248,113,113,0.3); }
 
 .ti-header {
   display: flex;

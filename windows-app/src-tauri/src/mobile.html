@@ -7,17 +7,17 @@
   <title>LocalDrop – File Transfer</title>
   <style>
     :root {
-      --bg:        #0d0d14;
-      --surface:   #16161f;
-      --surface2:  #1e1e2e;
-      --accent:    #7c6af7;
-      --accent2:   #a855f7;
-      --success:   #22c55e;
-      --danger:    #ef4444;
+      --bg:        #121212;
+      --surface:   #1e1e1e;
+      --surface2:  #252525;
+      --accent:    #9ca3af;
+      --accent2:   #6b7280;
+      --success:   #4ade80;
+      --danger:    #f87171;
       --warn:      #f59e0b;
-      --text:      #e8e8f0;
-      --muted:     #6b6b82;
-      --border:    rgba(255,255,255,0.07);
+      --text:      #e5e5e5;
+      --muted:     #a0a0a0;
+      --border:    #333333;
       --radius:    16px;
       --radius-sm: 10px;
     }
@@ -37,7 +37,7 @@
     .header {
       text-align: center;
       padding: 28px 20px 20px;
-      background: linear-gradient(180deg, rgba(124,106,247,0.12) 0%, transparent 100%);
+      background: linear-gradient(180deg, rgba(156,163,175,0.12) 0%, transparent 100%);
     }
     .logo {
       font-size: 26px;
@@ -96,8 +96,8 @@
       margin-bottom: 14px;
       -webkit-tap-highlight-color: transparent;
     }
-    .upload-zone.dragover { border-color: var(--accent); background: rgba(124,106,247,0.08); }
-    .upload-zone.has-file { border-color: rgba(124,106,247,0.5); border-style: solid; }
+    .upload-zone.dragover { border-color: var(--accent); background: rgba(156,163,175,0.08); }
+    .upload-zone.has-file { border-color: rgba(156,163,175,0.5); border-style: solid; }
     .upload-zone-emoji { font-size: 44px; margin-bottom: 12px; display: block; }
     .upload-zone-primary { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
     .upload-zone-secondary { font-size: 13px; color: var(--muted); }
@@ -204,9 +204,9 @@
       line-height: 1.4;
     }
     .status-pill.visible { display: block; }
-    .status-pill.active  { background: rgba(124,106,247,0.12); color: #a99cf9; }
-    .status-pill.success { background: rgba(34,197,94,0.12);  color: var(--success); }
-    .status-pill.error   { background: rgba(239,68,68,0.12);  color: var(--danger); }
+    .status-pill.active  { background: rgba(156,163,175,0.12); color: #d1d5db; }
+    .status-pill.success { background: rgba(74,222,128,0.12);  color: var(--success); }
+    .status-pill.error   { background: rgba(248,113,113,0.12);  color: var(--danger); }
 
     /* ── Buttons ── */
     .btn {
@@ -266,7 +266,7 @@
     }
     .dl-icon {
       width: 44px; height: 44px;
-      background: rgba(124,106,247,0.12);
+      background: rgba(156,163,175,0.12);
       border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
       font-size: 22px;
