@@ -118,7 +118,7 @@ async fn handle_file_download(
 
     match tokio::fs::File::open(&shared.path).await {
         Ok(file) => {
-            let stream      = ReaderStream::new(file);
+            let stream      = ReaderStream::with_capacity(file, 512 * 1024);
             let body        = Body::from_stream(stream);
             let mime        = mime_guess::from_path(&shared.path).first_or_octet_stream().to_string();
             let disposition = format!("attachment; filename=\"{}\"", shared.name);
@@ -182,18 +182,31 @@ async fn handle_upload(
         suffix += 1;
     }
 
-    let mut file = match tokio::fs::File::create(&final_path).await {
-        Ok(f)  => f,
-        Err(e) => {
-            eprintln!("[upload] create file error: {}", e);
-            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to create destination file").into_response();
+    // We use a channel and a dedicated OS thread to completely decouple 
+    // network reading (async) from disk writing (blocking). This maximizes throughput!
+    let (tx, mut rx) = tokio::sync::mpsc::channel::<bytes::Bytes>(1024);
+    let final_path_clone = final_path.clone();
+
+    let write_thread = std::thread::spawn(move || {
+        use std::io::Write;
+        let file = match std::fs::File::create(&final_path_clone) {
+            Ok(f) => f,
+            Err(e) => return Err(e),
+        };
+        // 2MB buffer for high throughput disk writes
+        let mut writer = std::io::BufWriter::with_capacity(2 * 1024 * 1024, file);
+        while let Some(chunk) = rx.blocking_recv() {
+            if let Err(e) = writer.write_all(&chunk) {
+                return Err(e);
+            }
         }
-    };
+        writer.flush()
+    });
 
     let start          = std::time::Instant::now();
+    let mut last_emit  = std::time::Instant::now();
     let mut bytes_recv: u64 = 0;
 
-    // Stream body chunks directly to disk
     let body   = request.into_body();
     let mut stream = body.into_data_stream();
 
@@ -202,42 +215,49 @@ async fn handle_upload(
             Ok(d)  => d,
             Err(e) => {
                 eprintln!("[upload] stream error: {}", e);
-                drop(file);
+                drop(tx); // close channel so thread exits
+                let _ = write_thread.join();
                 let _ = tokio::fs::remove_file(&final_path).await;
                 return (StatusCode::BAD_REQUEST, "Stream error during upload").into_response();
             }
         };
 
-        if let Err(e) = file.write_all(&data).await {
-            eprintln!("[upload] write error: {}", e);
-            drop(file);
+        let len = data.len() as u64;
+        if let Err(_) = tx.send(data).await {
+            eprintln!("[upload] channel closed unexpectedly");
+            let _ = write_thread.join();
             let _ = tokio::fs::remove_file(&final_path).await;
-            return (StatusCode::INTERNAL_SERVER_ERROR, "Disk write error").into_response();
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Disk write thread crashed").into_response();
         }
 
-        bytes_recv += data.len() as u64;
+        bytes_recv += len;
 
         // Throttle progress events to ~10 per second
-        let elapsed_secs = start.elapsed().as_secs_f64();
-        let speed        = if elapsed_secs > 0.0 { (bytes_recv as f64 / 1_048_576.0) / elapsed_secs } else { 0.0 };
+        if last_emit.elapsed().as_millis() >= 100 {
+            let elapsed_secs = start.elapsed().as_secs_f64();
+            let speed        = if elapsed_secs > 0.0 { (bytes_recv as f64 / 1_048_576.0) / elapsed_secs } else { 0.0 };
 
-        let progress = UploadProgress {
-            file_name:      safe_name.clone(),
-            bytes_received: bytes_recv,
-            total_bytes,
-            speed_mbps:     speed,
-            status:         "active".to_string(),
-            message:        format!("Receiving {} ({} MB/s)…", safe_name, format!("{:.1}", speed)),
-            saved_path:     None,
-        };
+            let progress = UploadProgress {
+                file_name:      safe_name.clone(),
+                bytes_received: bytes_recv,
+                total_bytes,
+                speed_mbps:     speed,
+                status:         "active".to_string(),
+                message:        format!("Receiving {} ({} MB/s)…", safe_name, format!("{:.1}", speed)),
+                saved_path:     None,
+            };
 
-        let _ = state.app_handle.emit("upload-progress", &progress);
-        let _ = state.upload_tx.send(progress);   // broadcast to SSE subscribers
+            let _ = state.app_handle.emit("upload-progress", &progress);
+            let _ = state.upload_tx.send(progress);
+            last_emit = std::time::Instant::now();
+        }
     }
 
-    // Flush file to disk
-    if let Err(e) = file.flush().await { eprintln!("[upload] flush error: {}", e); }
-    drop(file);
+    // Close the channel and wait for the dedicated writer thread to finish flushing to disk
+    drop(tx);
+    if let Err(e) = write_thread.join().unwrap() {
+        eprintln!("[upload] write thread error: {}", e);
+    }
 
     let elapsed_secs = start.elapsed().as_secs_f64();
     let speed        = if elapsed_secs > 0.0 { (bytes_recv as f64 / 1_048_576.0) / elapsed_secs } else { 0.0 };

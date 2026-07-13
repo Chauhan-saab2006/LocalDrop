@@ -495,14 +495,20 @@
         xhr.setRequestHeader('X-File-Name', encodeURIComponent(file.name));
         xhr.setRequestHeader('Content-Type', 'application/octet-stream');
 
+        let lastUiUpdate = 0;
         xhr.upload.onprogress = (e) => {
-          const elapsed = Math.max((Date.now() - startTime) / 1000, 0.001);
-          const speed   = (e.loaded / 1048576) / elapsed;
-          const pct     = e.lengthComputable ? Math.round(e.loaded / e.total * 100) : 0;
-          fillEl.style.width      = pct + '%';
-          statusEl.textContent    = pct + '%';
-          footEl.textContent      = formatBytes(e.loaded) + (e.lengthComputable ? ' / ' + formatBytes(e.total) : '');
-          speedEl.textContent     = speed.toFixed(1) + ' MB/s';
+          const now = Date.now();
+          // Update DOM max 10 times a second or on completion
+          if (now - lastUiUpdate > 100 || e.loaded === e.total) {
+            lastUiUpdate = now;
+            const elapsed = Math.max((now - startTime) / 1000, 0.001);
+            const speed   = (e.loaded / 1048576) / elapsed;
+            const pct     = e.lengthComputable ? Math.round(e.loaded / e.total * 100) : 0;
+            fillEl.style.width      = pct + '%';
+            statusEl.textContent    = pct + '%';
+            footEl.textContent      = formatBytes(e.loaded) + (e.lengthComputable ? ' / ' + formatBytes(e.total) : '');
+            speedEl.textContent     = speed.toFixed(1) + ' MB/s';
+          }
         };
 
         xhr.onload = () => {
