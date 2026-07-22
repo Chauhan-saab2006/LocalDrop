@@ -20,21 +20,32 @@ LocalDrop is a local cross-platform file transfer tool that runs a local HTTP se
 
 Download the latest installer from the [Releases page](https://github.com/Chauhan-saab2006/LocalDropt-APP/releases/latest).
 
+### ⚠️ Windows SmartScreen Warning
+
+LocalDrop is a new open-source project and does not yet have a paid code-signing certificate. Because of this, Windows SmartScreen may show a warning like **"Windows protected your PC"** when you run the installer for the first time.
+
+This is expected behavior for early-stage open-source software and does **not** mean the file is unsafe — it simply means the app hasn't yet built up enough reputation with Microsoft's signing system.
+
+**To proceed with installation:**
+1. Click **"More info"** on the SmartScreen warning
+2. Click **"Run anyway"**
+
+You can verify the integrity of the installer yourself by checking its SHA-256 checksum against the one listed on the [Releases page](https://github.com/Chauhan-saab2006/LocalDropt-APP/releases).
+
 ## Getting Started
 
-
 1. Navigate to `windows-app`:
-   ```bash
+```bash
    cd windows-app
-   ```
+```
 2. Run the development server:
-   ```bash
+```bash
    npx tauri dev
-   ```
+```
 3. To build a standalone executable or installer:
-   ```bash
+```bash
    npx tauri build
-   ```
+```
 
 ## Usage
 
@@ -43,7 +54,5 @@ Download the latest installer from the [Releases page](https://github.com/Chauha
 3. Scan the QR code with your phone or navigate to the displayed URL.
 4. Upload files from the phone to the PC or download shared files from the PC to the phone.
 
-
-
- ## Code Signing
-   See [CODE_SIGNING.md](.signpath/CODE_SIGNING.md) for how LocalDrop signs its Windows releases.
+## Code Signing
+See [CODE_SIGNING.md](.signpath/CODE_SIGNING.md) for how LocalDrop signs its Windows releases.
